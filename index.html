@@ -1,0 +1,234 @@
+<!doctype html><html><head>
+  <meta charset=utf8>
+  <title>ICRA Paret Verda</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    table{
+      border-collapse:collapse;
+    }
+  </style>
+</head><body>
+
+<h1>icra: manteniment paret verda (en desenvolupament)</h1>
+
+<div id=app>
+  <div v-if="pagina_actual=='sistema'">
+    <h1>Sistema</h1>
+    <div>
+      <table border=1>
+        <tr>
+          <th>Nom <td><input v-model.text="sistema.nom">
+        </tr>
+        <tr>
+          <th>Lloc<td><input v-model.text="sistema.lloc">
+        </tr>
+        <tr>
+          <th>Descripció<td><input v-model.text="sistema.descripcio">
+        </tr>
+        <tr>
+          <th>Dimensionament</th>
+          <td>
+            <div v-for="token,i in sistema.dimensioning">
+              <input v-model="sistema.dimensioning[i]" style="width:500px">
+              <button @click="sistema.dimensioning.splice(i,1)">eliminar característica</button>
+            </div>
+            <button @click="sistema.dimensioning.push('nova característica: valor')">afegir característica</button>
+          </td>
+        </tr>
+        <tr>
+          <th>Aparells</th>
+          <td>
+            <div>
+              <div v-for="ap,i in sistema.aparells">
+                <div
+                  style="
+                    display:flex;
+                    justify-content:space-between;
+                  "
+                >
+                  <a href="#" @click="aparell=ap;pagina_actual='aparell';">{{ap.nom}}</a>
+                  <button @click="sistema.aparells.splice(i,1)">eliminar aparell</button>
+                </div>
+              </div>
+            </div>
+            <button @click="sistema.afegir_aparell()">afegir aparell</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div v-if="pagina_actual=='aparell' && aparell">
+    <code>
+      <a href="#" @click="pagina_actual='sistema'">{{sistema.nom}}</a>
+      &rsaquo;
+      {{aparell.nom}}
+    </code>
+    <h2>Aparell</h2>
+    <div>
+      <table border=1>
+        <tr>
+          <th>Nom <td><input v-model.text="aparell.nom">
+        </tr>
+        <tr>
+          <th>Dimensionament</th>
+          <td>
+            <div v-for="token,i in aparell.dimensioning">
+              <input v-model="aparell.dimensioning[i]" style="width:500px">
+              <button @click="aparell.dimensioning.splice(i,1)">eliminar característica</button>
+            </div>
+            <button @click="aparell.dimensioning.push('nova característica: valor')">afegir característica</button>
+          </td>
+        </tr>
+        <tr>
+          <th>Tasques</th>
+          <td>
+            <div>
+              <div v-for="ta,i in aparell.tasques">
+                <a href="#" @click="tasca=ta;pagina_actual='tasca';">{{ta.nom}}</a>
+                <button @click="aparell.tasques.splice(i,1)">eliminar tasca</button>
+              </div>
+            </div>
+            <button @click="aparell.afegir_tasca()">afegir tasca</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div v-if="pagina_actual=='tasca' && aparell && tasca">
+    <code>
+      <a href="#" @click="pagina_actual='sistema'">{{sistema.nom}}</a>
+      &rsaquo;
+      <a href="#" @click="pagina_actual='aparell'">{{aparell.nom}}</a>
+      &rsaquo;
+      {{tasca.nom}}
+    </code>
+    <h2>Tasca</h2>
+    <div>
+      <table border=1>
+        <tr><th>Nom<td><input v-model.text="tasca.nom"></tr>
+        <tr><th>Descripció<td><input v-model.text="tasca.descripcio"></tr>
+        <tr><th>Responsable<td><input v-model.text="tasca.responsable"></tr>
+        <tr>
+          <th>Material necessari</th>
+          <td>
+            <div>
+              <div v-for="ma,i in tasca.necessary_material">
+                <input v-model="tasca.necessary_material[i]">
+                <button @click="tasca.necessary_material.splice(i,1)">eliminar material</button>
+              </div>
+            </div>
+            <button @click="tasca.necessary_material.afegir_material()">afegir material</button>
+          </td>
+        </tr>
+        <tr>
+          <th>Accions</th>
+          <td>
+            <div>
+              <div v-for="ac,i in tasca.actions_to_do">
+                {{i+1}}:
+                <input v-model="tasca.actions_to_do[i]">
+                <button @click="tasca.actions_to_do.splice(i,1)">eliminar acció</button>
+              </div>
+            </div>
+            <button @click="tasca.actions_to_do.push('acció')">afegir acció</button>
+          </td>
+        </tr>
+        <tr><th>Cost (eur)<td><input type=number v-model.number="tasca.cost_eur" step="0.01"></tr>
+        <tr><th>Periodicitat (dies)<td><input type=number v-model.number="tasca.periodicitat_dies"></tr>
+        <tr>
+          <th>Historial</th>
+          <td>
+            <div>
+              <div v-for="hi,i in tasca.historial">
+                <input type=date v-model="tasca.historial[i]">
+                <button @click="tasca.historial.splice(i,1)">eliminar historial</button>
+              </div>
+            </div>
+            <button @click="tasca.historial.push('2025-01-01')">afegir historial</button>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  class Sistema{
+    constructor(){
+      this.nom="Paret Verda St. Quirze";
+      this.lloc="St. Quirze";
+      this.descripcio="comentaris";
+      this.dimensioning=[
+        "aaa: 111 kg",
+        "bbb: 222 m3",
+      ];
+      this.aparells=[
+        new Aparell(),
+      ];
+    }
+
+    afegir_aparell(nom){
+      this.aparells.push(new Aparell());
+    }
+  }
+
+  class Aparell{
+    constructor(){
+      this.nom="nou aparell";
+      this.dimensioning=[
+        "volum: 10m3",
+        "velocitat: 10 km/s",
+        "consum: 500 W",
+      ];
+      this.tasques=[
+        new Tasca(),
+      ];
+    }
+
+    afegir_tasca(){
+      this.tasques.push(new Tasca());
+    }
+  }
+
+  class Tasca{
+    constructor(){
+      this.nom="nom de la tasca";
+      this.descripcio="descripció de la tasca";
+      this.responsable="ICRA";
+      this.necessary_material=[
+        "cubell",
+        "aigua xarxa",
+        "guants làtex",
+        "ulleres protecció",
+      ];
+      this.actions_to_do=[
+        "Aturar la bomba",
+        "Posar el cubell",
+        "Desenroscar el filtre",
+        "Netejar el filtre",
+      ];
+      this.cost_eur=0;
+      this.periodicitat_dies=0;
+      this.historial=[];
+    }
+  }
+
+  let app = Vue.createApp({
+    data(){return{
+      pagina_actual:"sistema",
+
+      sistema:new Sistema(),
+      aparell:null,
+      tasca:null,
+
+    }},
+
+    methods:{},
+
+    computed:{},
+
+  }).mount("#app");
+</script>
