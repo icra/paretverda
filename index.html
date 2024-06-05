@@ -119,7 +119,7 @@
                 <button @click="tasca.necessary_material.splice(i,1)">eliminar material</button>
               </div>
             </div>
-            <button @click="tasca.necessary_material.afegir_material()">afegir material</button>
+            <button @click="tasca.afegir_material()">afegir material</button>
           </td>
         </tr>
         <tr>
@@ -212,6 +212,10 @@
       this.cost_eur=0;
       this.periodicitat_dies=0;
       this.historial=[];
+    }
+
+    afegir_material(){
+      this.necessary_material.push("nou material necessari");
     }
   }
 
