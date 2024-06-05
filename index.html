@@ -59,12 +59,12 @@
   </div>
 
   <div v-if="pagina_actual=='aparell' && aparell">
+    <h2>Aparell</h2>
     <code>
       <a href="#" @click="pagina_actual='sistema'">{{sistema.nom}}</a>
       &rsaquo;
       {{aparell.nom}}
     </code>
-    <h2>Aparell</h2>
     <div>
       <table border=1>
         <tr>
@@ -97,6 +97,7 @@
   </div>
 
   <div v-if="pagina_actual=='tasca' && aparell && tasca">
+    <h2>Tasca</h2>
     <code>
       <a href="#" @click="pagina_actual='sistema'">{{sistema.nom}}</a>
       &rsaquo;
@@ -104,7 +105,6 @@
       &rsaquo;
       {{tasca.nom}}
     </code>
-    <h2>Tasca</h2>
     <div>
       <table border=1>
         <tr><th>Nom<td><input v-model.text="tasca.nom"></tr>
