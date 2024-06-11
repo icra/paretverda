@@ -5,31 +5,43 @@
   <style>
     table{
       border-collapse:collapse;
+      width:100%;
+    }
+    a[current=true]{
+      background:yellow;
     }
   </style>
 </head><body>
-
 <h1>icra: manteniment paret verda (en desenvolupament)</h1>
 
 <div id=app>
-  <div v-if="pagina_actual=='sistema'">
-    <h1>Sistema</h1>
-    <div>
+  <div
+    style="
+      display:grid;
+      grid-template-columns:33% 33% 33%;
+      grid-gap:1px;
+    "
+  >
+    <div v-if="sistema">
+      <h2>Sistema</h2>
       <table border=1>
         <tr>
-          <th>Nom <td><input v-model.text="sistema.nom">
+          <th>Nom sistema<td><input v-model.text="sistema.nom">
         </tr>
         <tr>
           <th>Lloc<td><input v-model.text="sistema.lloc">
         </tr>
         <tr>
-          <th>Descripció<td><input v-model.text="sistema.descripcio">
+          <th>Descripció
+          <td>
+            <textarea v-model.text="sistema.descripcio"></textarea>
+          </td>
         </tr>
         <tr>
           <th>Dimensionament</th>
           <td>
-            <div v-for="token,i in sistema.dimensioning">
-              <input v-model="sistema.dimensioning[i]" style="width:500px">
+            <div v-for="_,i in sistema.dimensioning">
+              <input v-model="sistema.dimensioning[i]">
               <button @click="sistema.dimensioning.splice(i,1)">eliminar característica</button>
             </div>
             <button @click="sistema.dimensioning.push('nova característica: valor')">afegir característica</button>
@@ -46,7 +58,7 @@
                     justify-content:space-between;
                   "
                 >
-                  <a href="#" @click="aparell=ap;pagina_actual='aparell';">{{ap.nom}}</a>
+                  <a href="#" @click="aparell=ap;" :current="aparell==ap">{{ap.nom}}</a>
                   <button @click="sistema.aparells.splice(i,1)">eliminar aparell</button>
                 </div>
               </div>
@@ -56,25 +68,21 @@
         </tr>
       </table>
     </div>
-  </div>
 
-  <div v-if="pagina_actual=='aparell' && aparell">
-    <h2>Aparell</h2>
-    <code>
-      <a href="#" @click="pagina_actual='sistema'">{{sistema.nom}}</a>
-      &rsaquo;
-      {{aparell.nom}}
-    </code>
-    <div>
+    <div v-if="sistema && aparell">
+      <h2>
+        Aparell
+        <button @click="tasca=null;aparell=null">X</button>
+      </h2>
       <table border=1>
         <tr>
-          <th>Nom <td><input v-model.text="aparell.nom">
+          <th>Nom aparell<td><input v-model.text="aparell.nom">
         </tr>
         <tr>
           <th>Dimensionament</th>
           <td>
             <div v-for="token,i in aparell.dimensioning">
-              <input v-model="aparell.dimensioning[i]" style="width:500px">
+              <input v-model="aparell.dimensioning[i]">
               <button @click="aparell.dimensioning.splice(i,1)">eliminar característica</button>
             </div>
             <button @click="aparell.dimensioning.push('nova característica: valor')">afegir característica</button>
@@ -85,8 +93,13 @@
           <td>
             <div>
               <div v-for="ta,i in aparell.tasques">
-                <a href="#" @click="tasca=ta;pagina_actual='tasca';">{{ta.nom}}</a>
-                <button @click="aparell.tasques.splice(i,1)">eliminar tasca</button>
+                <div style="
+                  display:flex;
+                  justify-content:space-between;
+                ">
+                  <a href="#" @click="tasca=ta;" :current="tasca==ta">{{ta.nom}}</a>
+                  <button @click="aparell.tasques.splice(i,1)">eliminar tasca</button>
+                </div>
               </div>
             </div>
             <button @click="aparell.afegir_tasca()">afegir tasca</button>
@@ -94,20 +107,14 @@
         </tr>
       </table>
     </div>
-  </div>
 
-  <div v-if="pagina_actual=='tasca' && aparell && tasca">
-    <h2>Tasca</h2>
-    <code>
-      <a href="#" @click="pagina_actual='sistema'">{{sistema.nom}}</a>
-      &rsaquo;
-      <a href="#" @click="pagina_actual='aparell'">{{aparell.nom}}</a>
-      &rsaquo;
-      {{tasca.nom}}
-    </code>
-    <div>
+    <div v-if="sistema && aparell && tasca">
+      <h2>
+        Tasca
+        <button @click="tasca=null">X</button>
+      </h2>
       <table border=1>
-        <tr><th>Nom<td><input v-model.text="tasca.nom"></tr>
+        <tr><th>Nom tasca<td><input v-model.text="tasca.nom"></tr>
         <tr><th>Descripció<td><input v-model.text="tasca.descripcio"></tr>
         <tr><th>Responsable<td><input v-model.text="tasca.responsable"></tr>
         <tr>
@@ -154,7 +161,7 @@
   </div>
 </div>
 
-<script>
+<script>//Estructura
   class Sistema{
     constructor(){
       this.nom="Paret Verda St. Quirze";
@@ -176,7 +183,7 @@
 
   class Aparell{
     constructor(){
-      this.nom="nou aparell";
+      this.nom=`nou aparell ${app.sistema ? app.sistema.aparells.length : 0}`;
       this.dimensioning=[
         "volum: 10m3",
         "velocitat: 10 km/s",
@@ -194,7 +201,7 @@
 
   class Tasca{
     constructor(){
-      this.nom="nom de la tasca";
+      this.nom=`nova tasca ${app.aparell ? app.aparell.tasques.length : 0}`;
       this.descripcio="descripció de la tasca";
       this.responsable="ICRA";
       this.necessary_material=[
@@ -218,15 +225,18 @@
       this.necessary_material.push("nou material necessari");
     }
   }
+</script>
 
+<script>//Vue
   let app = Vue.createApp({
     data(){return{
-      pagina_actual:"sistema",
-      sistema:new Sistema(),
+      sistema:null,
       aparell:null,
       tasca:null,
     }},
     methods:{},
     computed:{},
   }).mount("#app");
+
+  app.sistema = new Sistema();
 </script>
