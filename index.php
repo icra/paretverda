@@ -304,6 +304,10 @@
         });
       },
       guardar(){
+        if(!confirm("sobreescriure el sistema guardat?")){
+          return;
+        }
+
         let payload = JSON.stringify(this.sistema);
 
         let body = new FormData();
