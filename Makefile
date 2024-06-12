@@ -11,5 +11,5 @@ git_push_and_deploy:
 	# -r  actua recursivament
 	rsync -hPvr \
 		--exclude ".git" \
-		--exclude "deploy.sh" \
+		--exclude "db/db.sqlite" \
 		. root@icra.loading.net:/var/www/vhosts/icradev.cat/paretverda.icradev.cat
