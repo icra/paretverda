@@ -260,7 +260,6 @@
       tasca:null,
     }},
     methods:{
-
       //class methods here for easy parsing from json
       afegir_aparell(sistema){
         let ap = new Aparell();
@@ -331,5 +330,8 @@
       },
     },
     computed:{},
+    mounted(){
+      this.carregar();
+    },
   }).mount("#app");
 </script>
