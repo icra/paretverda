@@ -29,7 +29,7 @@
     style="
       display:grid;
       grid-template-columns:33% 33% 33%;
-      grid-gap:1px;
+      grid-gap:2px;
     "
   >
     <div v-if="sistema">
@@ -233,16 +233,10 @@
       this.descripcio="Descripció de la tasca";
       this.responsable="ICRA";
       this.necessary_material=[
-        "cubell",
-        "aigua",
-        "guants làtex",
-        "ulleres protecció",
+        "material necessari sense nom",
       ];
       this.actions_to_do=[
-        "Aturar la bomba",
-        "Posar el cubell",
-        "Desenroscar el filtre",
-        "Netejar el filtre",
+        "acció sense nom",
       ];
       this.cost_eur=0;
       this.periodicitat_dies=0;
