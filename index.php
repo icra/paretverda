@@ -13,6 +13,9 @@
     a[current=true]{
       background:yellow;
     }
+    textarea{
+      width:350px;
+    }
   </style>
 </head><body>
 <h1>icra: manteniment paret verda (en desenvolupament)</h1>
@@ -147,7 +150,7 @@
           </td>
         </tr>
         <tr><th>Nom tasca<td><input v-model.text="tasca.nom"></tr>
-        <tr><th>Descripció<td><input v-model.text="tasca.descripcio"></tr>
+        <tr><th>Descripció<td><textarea v-model.text="tasca.descripcio"></textarea></tr>
         <tr><th>Responsable<td><input v-model.text="tasca.responsable"></tr>
         <tr>
           <th>Material necessari</th>
@@ -172,9 +175,16 @@
           <th>Accions</th>
           <td>
             <div>
-              <div v-for="ac,i in tasca.actions_to_do">
-                {{i+1}}:
-                <input v-model="tasca.actions_to_do[i]">
+              <div v-for="ac,i in tasca.actions_to_do"
+                style="
+                  display:flex;
+                  justify-content:space-between;
+                "
+              >
+                <div>
+                  {{i+1}}:
+                  <input v-model="tasca.actions_to_do[i]">
+                </div>
                 <button @click="tasca.actions_to_do.splice(i,1)">eliminar acció</button>
               </div>
             </div>
