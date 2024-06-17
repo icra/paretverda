@@ -24,7 +24,7 @@
     }
     button[pestanya_actual=true]{
       color:black;
-      background:white;
+      background:linear-gradient(#f8f8f8,white);
     }
     .warning{
       color:red;
@@ -41,8 +41,11 @@
   <div>
     <button @click="nou()">nou</button> |
     <button @click="guardar()" :disabled="sistema==null">guardar</button> |
-    <button @click="carregar()">carregar</button> |
-    <a href="db/api.php" target="_blank">veure guardat (format json)</a>
+    <button @click="carregar()">carregar</button>
+    <!--
+      |
+      <a href="db/api.php" target="_blank">veure guardat (format json)</a>
+    -->
   </div><hr>
 
   <div v-if="sistema">
@@ -119,7 +122,7 @@
                     <div style="font-size:larger">
                       <a href="#" @click="aparell=ap;tasca=null" :current="aparell==ap">{{ap.nom}}</a>
                     </div>
-                    <button @click="sistema.aparells.splice(i,1)">eliminar aparell</button>
+                    <button @click="sistema.aparells.splice(i,1);tasca=null;aparell=null">eliminar aparell</button>
                   </div>
                 </div>
               </div>
@@ -341,6 +344,11 @@
       (en desenvolupament)
     </div>
 
+    <!--pestanya accumulated_inflation-->
+    <div v-if="pestanya_actual=='accumulated_inflation'">
+      (en desenvolupament)
+    </div>
+
   </div>
 </div>
 
@@ -400,6 +408,7 @@
       pestanyes:[
         "inici",
         "resum_tasques_periodiques",
+        "accumulated_inflation",
         "lectures_consums",
       ],
       pestanya_actual:"inici",
