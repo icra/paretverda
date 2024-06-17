@@ -1,6 +1,4 @@
-<?php
-  include'auth.php';
-?>
+<?php include'auth.php';?>
 <!doctype html><html><head>
   <meta charset=utf8>
   <title>ICRA Paret Verda</title>
@@ -14,7 +12,26 @@
       background:yellow;
     }
     textarea{
-      width:350px;
+      width:98%;
+    }
+    button[pestanya_actual]{
+      border:1px solid #ccc;
+      border-bottom:none;
+      border-radius:5px 5px 0 0;
+      cursor:pointer;
+      padding:0.618em 1em;
+      color:#666;
+    }
+    button[pestanya_actual=true]{
+      color:black;
+      background:white;
+    }
+    .warning{
+      color:red;
+      font-weight:bold;
+    }
+    input[type=number]{
+      text-align:right;
     }
   </style>
 </head><body>
@@ -26,187 +43,304 @@
     <button @click="guardar()" :disabled="sistema==null">guardar</button> |
     <button @click="carregar()">carregar</button> |
     <a href="db/api.php" target="_blank">veure guardat (format json)</a>
-  </div>
+  </div><hr>
 
-  <div
-    style="
-      display:grid;
-      grid-template-columns:33% 33% 33%;
-      grid-gap:2px;
-    "
-  >
-    <div v-if="sistema">
-      <h2>Sistema</h2>
-      <table border=1>
-        <tr>
-          <th>Nom sistema<td><input v-model.text="sistema.nom">
-        </tr>
-        <tr>
-          <th>Lloc<td><input v-model.text="sistema.lloc" style="width:90%">
-        </tr>
-        <tr>
-          <th>Descripció
-          <td>
-            <textarea v-model.text="sistema.descripcio"></textarea>
-          </td>
-        </tr>
-        <tr>
-          <th>Dimensionament</th>
-          <td>
-            <div v-for="_,i in sistema.dimensioning">
-              <div
-                style="
-                  display:flex;
-                  justify-content:space-between;
-                "
-              >
-                <input v-model="sistema.dimensioning[i]">
-                <button @click="sistema.dimensioning.splice(i,1)">eliminar característica</button>
-              </div>
-            </div>
-            <button @click="sistema.dimensioning.push('característica: valor unitat')">afegir característica</button>
-          </td>
-        </tr>
-        <tr>
-          <th>Aparells</th>
-          <td>
-            <div>
-              <div v-for="ap,i in sistema.aparells">
+  <div v-if="sistema">
+
+    <!--selector pestanyes-->
+    <div
+      id=selector_pestanyes
+      style="
+        display:flex;
+        flex-wrap:wrap;
+        margin:5px 0;
+      "
+    >
+      <div v-for="p in pestanyes">
+        <button
+          @click="pestanya_actual=p"
+          :pestanya_actual="p==pestanya_actual"
+        >{{p.replaceAll("_"," ")}}</button>
+      </div>
+    </div>
+
+    <!--pestanya general-->
+    <div
+      v-if="pestanya_actual=='inici'"
+      style="
+        display:grid;
+        grid-template-columns:33% 33% 33%;
+        grid-gap:2px;
+      "
+    >
+      <div>
+        <h2>Sistema</h2>
+        <table border=1>
+          <tr>
+            <th>Nom sistema<td><input v-model.text="sistema.nom">
+          </tr>
+          <tr>
+            <th>Lloc<td><input v-model.text="sistema.lloc" style="width:90%">
+          </tr>
+          <tr>
+            <th>Descripció
+            <td>
+              <textarea v-model.text="sistema.descripcio"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <th>Dimensionament</th>
+            <td>
+              <div v-for="_,i in sistema.dimensioning">
                 <div
                   style="
                     display:flex;
                     justify-content:space-between;
                   "
                 >
-                  <div style="font-size:larger">
-                    <a href="#" @click="aparell=ap;tasca=null" :current="aparell==ap">{{ap.nom}}</a>
-                  </div>
-                  <button @click="sistema.aparells.splice(i,1)">eliminar aparell</button>
+                  <input v-model="sistema.dimensioning[i]">
+                  <button @click="sistema.dimensioning.splice(i,1)">eliminar característica</button>
                 </div>
               </div>
-            </div>
-            <button @click="afegir_aparell(sistema)">afegir aparell</button>
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <div v-if="sistema && aparell">
-      <h2>Aparell</h2>
-      <table border=1>
-        <tr>
-          <td colspan=2 style="text-align:right">
-            <button @click="tasca=null;aparell=null">X</button>
-          </td>
-        </tr>
-        <tr>
-          <th>Nom aparell<td><input v-model.text="aparell.nom">
-        </tr>
-        <tr>
-          <th>Dimensionament</th>
-          <td>
-            <div v-for="token,i in aparell.dimensioning">
-              <div
-                style="
-                  display:flex;
-                  justify-content:space-between;
-                "
-              >
-                <input v-model="aparell.dimensioning[i]">
-                <button @click="aparell.dimensioning.splice(i,1)">eliminar característica</button>
-              </div>
-            </div>
-            <button @click="aparell.dimensioning.push('característica: valor unitat')">afegir característica</button>
-          </td>
-        </tr>
-        <tr>
-          <th>Tasques</th>
-          <td>
-            <div>
-              <div v-for="ta,i in aparell.tasques">
-                <div style="
-                  display:flex;
-                  justify-content:space-between;
-                ">
-                  <div style="font-size:larger">
-                    <a href="#" @click="tasca=ta;" :current="tasca==ta">{{ta.nom}}</a>
+              <button @click="sistema.dimensioning.push('característica: valor unitat')">afegir característica</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Aparells</th>
+            <td>
+              <div>
+                <div v-for="ap,i in sistema.aparells">
+                  <div
+                    style="
+                      display:flex;
+                      justify-content:space-between;
+                    "
+                  >
+                    <div style="font-size:larger">
+                      <a href="#" @click="aparell=ap;tasca=null" :current="aparell==ap">{{ap.nom}}</a>
+                    </div>
+                    <button @click="sistema.aparells.splice(i,1)">eliminar aparell</button>
                   </div>
-                  <button @click="aparell.tasques.splice(i,1)">eliminar tasca</button>
                 </div>
               </div>
-            </div>
-            <button @click="afegir_tasca(aparell)">afegir tasca</button>
-          </td>
-        </tr>
-      </table>
-    </div>
+              <button @click="afegir_aparell(sistema)">afegir aparell</button>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-    <div v-if="sistema && aparell && tasca">
-      <h2>Tasca</h2>
-      <table border=1>
-        <tr>
-          <td colspan=2 style="text-align:right">
-            <button @click="tasca=null">X</button>
-          </td>
-        </tr>
-        <tr><th>Nom tasca<td><input v-model.text="tasca.nom"></tr>
-        <tr><th>Descripció<td><textarea v-model.text="tasca.descripcio"></textarea></tr>
-        <tr><th>Responsable<td><input v-model.text="tasca.responsable"></tr>
-        <tr>
-          <th>Material necessari</th>
-          <td>
-            <div>
-              <div v-for="ma,i in tasca.necessary_material">
+      <div v-if="aparell">
+        <h2>Aparell</h2>
+        <table border=1>
+          <tr>
+            <td colspan=2 style="text-align:right">
+              <button @click="tasca=null;aparell=null">X</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Nom aparell<td><input v-model.text="aparell.nom">
+          </tr>
+          <tr>
+            <th>Dimensionament</th>
+            <td>
+              <div v-for="token,i in aparell.dimensioning">
                 <div
                   style="
                     display:flex;
                     justify-content:space-between;
                   "
                 >
-                  <input v-model="tasca.necessary_material[i]">
-                  <button @click="tasca.necessary_material.splice(i,1)">eliminar material</button>
+                  <input v-model="aparell.dimensioning[i]">
+                  <button @click="aparell.dimensioning.splice(i,1)">eliminar característica</button>
                 </div>
               </div>
-            </div>
-            <button @click="afegir_material(tasca)">afegir material</button>
-          </td>
-        </tr>
-        <tr>
-          <th>Accions</th>
-          <td>
-            <div>
-              <div v-for="ac,i in tasca.actions_to_do"
-                style="
-                  display:flex;
-                  justify-content:space-between;
+              <button @click="aparell.dimensioning.push('característica: valor unitat')">afegir característica</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Tasques</th>
+            <td>
+              <div>
+                <div v-for="ta,i in aparell.tasques">
+                  <div style="
+                    display:flex;
+                    justify-content:space-between;
+                  ">
+                    <div style="font-size:larger">
+                      <a href="#" @click="tasca=ta;" :current="tasca==ta">{{ta.nom}}</a>
+                    </div>
+                    <button @click="aparell.tasques.splice(i,1)">eliminar tasca</button>
+                  </div>
+                </div>
+              </div>
+              <button @click="afegir_tasca(aparell)">afegir tasca</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div v-if="aparell && tasca">
+        <h2>Tasca</h2>
+        <table border=1>
+          <tr>
+            <td colspan=2 style="text-align:right">
+              <button @click="tasca=null">X</button>
+            </td>
+          </tr>
+          <tr><th>Nom tasca<td><input v-model.text="tasca.nom"></tr>
+          <tr><th>Descripció<td><textarea v-model.text="tasca.descripcio"></textarea></tr>
+          <tr><th>Responsable<td><input v-model.text="tasca.responsable"></tr>
+          <tr>
+            <th>Material necessari</th>
+            <td>
+              <div>
+                <div v-for="ma,i in tasca.necessary_material">
+                  <div
+                    style="
+                      display:flex;
+                      justify-content:space-between;
+                    "
+                  >
+                    <input v-model="tasca.necessary_material[i]">
+                    <button @click="tasca.necessary_material.splice(i,1)">eliminar material</button>
+                  </div>
+                </div>
+              </div>
+              <button @click="afegir_material(tasca)">afegir material</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Accions</th>
+            <td>
+              <div>
+                <div v-for="ac,i in tasca.actions_to_do"
+                  style="
+                    display:flex;
+                    justify-content:space-between;
+                  "
+                >
+                  <div>
+                    {{i+1}}:
+                    <input v-model="tasca.actions_to_do[i]">
+                  </div>
+                  <button @click="tasca.actions_to_do.splice(i,1)">eliminar acció</button>
+                </div>
+              </div>
+              <button @click="tasca.actions_to_do.push('acció sense nom')">afegir acció</button>
+            </td>
+          </tr>
+          <tr><th>Cost (eur)<td><input type=number v-model.number="tasca.cost_eur" step="0.01"></tr>
+          <tr><th>Periodicitat (dies)<td><input type=number v-model.number="tasca.periodicitat_dies"></tr>
+          <tr>
+            <th>Historial</th>
+            <td>
+              <div>
+                <div v-for="hi,i in tasca.historial">
+                  <input type=date v-model="tasca.historial[i]">
+                  <button @click="tasca.historial.splice(i,1)">eliminar historial</button>
+                </div>
+              </div>
+              <button @click="tasca.historial.push(new Date().toISOString().substring(0,10))">afegir historial</button>
+            </td>
+          </tr>
+
+          <tbody v-if="tasca.periodicitat_dies">
+            <tr v-for="um in [get_manteniment(tasca)]">
+              <th>Següent manteniment</th>
+              <td>
+                <div v-if="um.next">
+                  {{um.next}}
+                  <span v-for="dies in [days_to(um.next)]">
+                    (d'aquí {{dies}} dies)
+                    <span v-if="dies<0" class=warning>
+                      PASSAT
+                    </span>
+                  </span>
+                </div>
+                <div v-if="!um.next" class=warning>
+                  Quant abans
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!--pestanya resum_tasques_periodiques-->
+    <div v-if="pestanya_actual=='resum_tasques_periodiques'">
+      <h3>Resum tasques periòdiques</h3>
+      <div>
+        <table border=1 style="text-align:center">
+          <thead>
+            <tr>
+              <th>Aparell</th>
+              <th>Tasca</th>
+              <th>Periodicitat (dies)</th>
+              <th>Últim manteniment</th>
+              <th>Següent manteniment</th>
+            </tr>
+          </thead>
+          <tr v-for="row in taula_resum_tasques_periodiques">
+            <td>
+              <a href="#"
+                @click="
+                  tasca=row.tasca;
+                  aparell=row.aparell;
+                  pestanya_actual='inici';
                 "
               >
-                <div>
-                  {{i+1}}:
-                  <input v-model="tasca.actions_to_do[i]">
+                {{row.aparell.nom}}
+              </a>
+            </td>
+            <td>
+              <a href="#"
+                @click="
+                  tasca=row.tasca;
+                  aparell=row.aparell;
+                  pestanya_actual='inici';
+                "
+              >
+                {{row.tasca.nom}}
+              </a>
+            </td>
+            <td>{{row.tasca.periodicitat_dies}}</td>
+            <td>
+              <div v-for="um in [get_manteniment(row.tasca)]">
+                <div v-if="um.ultim">
+                  {{um.ultim}}
                 </div>
-                <button @click="tasca.actions_to_do.splice(i,1)">eliminar acció</button>
+                <div v-if="!um.ultim" class=warning>
+                  Mai
+                </div>
               </div>
-            </div>
-            <button @click="tasca.actions_to_do.push('acció sense nom')">afegir acció</button>
-          </td>
-        </tr>
-        <tr><th>Cost (eur)<td><input type=number v-model.number="tasca.cost_eur" step="0.01"></tr>
-        <tr><th>Periodicitat (dies)<td><input type=number v-model.number="tasca.periodicitat_dies"></tr>
-        <tr>
-          <th>Historial</th>
-          <td>
-            <div>
-              <div v-for="hi,i in tasca.historial">
-                <input type=date v-model="tasca.historial[i]">
-                <button @click="tasca.historial.splice(i,1)">eliminar historial</button>
+            </td>
+            <td>
+              <div v-for="um in [get_manteniment(row.tasca)]">
+                <div v-if="um.next">
+                  {{um.next}}
+                  <span v-for="dies in [days_to(um.next)]">
+                    (d'aquí {{dies}} dies)
+                    <span v-if="dies<0" class=warning>
+                      PASSAT
+                    </span>
+                  </span>
+                </div>
+                <div v-if="!um.next" class=warning>
+                  Quant abans
+                </div>
               </div>
-            </div>
-            <button @click="tasca.historial.push(new Date().toISOString().substring(0,10))">afegir historial</button>
-          </td>
-        </tr>
-      </table>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
+
+    <!--pestanya lectures_consums-->
+    <div v-if="pestanya_actual=='lectures_consums'">
+      (en desenvolupament)
+    </div>
+
   </div>
 </div>
 
@@ -262,8 +396,24 @@
       sistema:null,
       aparell:null,
       tasca:null,
+
+      pestanyes:[
+        "inici",
+        "resum_tasques_periodiques",
+        "lectures_consums",
+      ],
+      pestanya_actual:"resum_tasques_periodiques",
+
     }},
+
     methods:{
+      days_to(time_str){
+        let dn = new Date(); //date now
+        let df = new Date(time_str); //date future
+        let dd = (df.getTime()-dn.getTime())/1000/86400; //dies
+        return Math.ceil(dd);
+      },
+
       //class methods here for easy parsing from json
       afegir_aparell(sistema){
         let ap = new Aparell();
@@ -277,8 +427,24 @@
         aparell.tasques.push(ta);
         this.tasca = ta;
       },
+
       afegir_material(tasca){
         tasca.necessary_material.push("material necessari sense nom");
+      },
+
+      get_manteniment(tasca){
+        let ultim = false;
+        let next  = false;
+
+        if(tasca.historial.length){
+          ultim = tasca.historial.at(-1);
+
+          let du = new Date(ultim);
+          let dn = new Date(du.getTime()+tasca.periodicitat_dies*86400e3);
+          next = dn.toISOString().substring(0,10);
+        }
+
+        return {ultim,next};
       },
 
       //file managing
@@ -287,6 +453,7 @@
         this.aparell=null;
         this.tasca=null;
       },
+
       carregar(){
         fetch("db/api.php").then(r=>r.json()).then(r=>{
           r = r[0];
@@ -306,6 +473,7 @@
 
         });
       },
+
       guardar(){
         if(!confirm("sobreescriure el sistema guardat?")){
           return;
@@ -333,7 +501,27 @@
         });
       },
     },
-    computed:{},
+
+    computed:{
+      taula_resum_tasques_periodiques(){
+        let taula=[];
+
+        let aparells = this.sistema.aparells.forEach(aparell=>{
+          aparell.tasques.forEach(tasca=>{
+            if(tasca.periodicitat_dies){
+              let fila={
+                tasca,
+                aparell,
+              };
+              taula.push(fila);
+            }
+          });
+        });
+
+        return taula;
+      },
+    },
+
     mounted(){
       this.carregar();
     },

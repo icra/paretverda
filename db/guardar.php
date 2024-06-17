@@ -1,4 +1,6 @@
 <?php
+//sobreescriu base de dades
+
 session_start();
 
 if(!isset($_SESSION["auth"])){
