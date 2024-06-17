@@ -402,7 +402,7 @@
         "resum_tasques_periodiques",
         "lectures_consums",
       ],
-      pestanya_actual:"resum_tasques_periodiques",
+      pestanya_actual:"inici",
 
     }},
 
