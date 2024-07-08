@@ -339,16 +339,6 @@
       </div>
     </div>
 
-    <!--pestanya lectures_consums-->
-    <div v-if="pestanya_actual=='lectures_consums'">
-      (en desenvolupament)
-    </div>
-
-    <!--pestanya accumulated_inflation-->
-    <div v-if="pestanya_actual=='accumulated_inflation'">
-      (en desenvolupament)
-    </div>
-
   </div>
 </div>
 
@@ -408,8 +398,6 @@
       pestanyes:[
         "inici",
         "resum_tasques_periodiques",
-        "accumulated_inflation",
-        "lectures_consums",
       ],
       pestanya_actual:"inici",
 
