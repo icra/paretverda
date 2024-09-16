@@ -13,6 +13,7 @@
     }
     textarea{
       width:98%;
+      field-sizing:content;
     }
     button[pestanya_actual]{
       border:1px solid #ccc;
