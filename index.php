@@ -223,9 +223,9 @@
                     justify-content:space-between;
                   "
                 >
-                  <div>
-                    {{i+1}}:
-                    <input v-model="tasca.actions_to_do[i]">
+                  <div style="display:flex">
+                    <span>{{i+1}}:</span>
+                    <textarea v-model="tasca.actions_to_do[i]"></textarea>
                   </div>
                   <button @click="tasca.actions_to_do.splice(i,1)">eliminar acció</button>
                 </div>
