@@ -1,0 +1,108 @@
+<!doctype html><html><head>
+  <title>ICRA paret verda</title>
+  <meta charset="utf8">
+
+  <!--lib vue-->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <style>
+    body{
+      font-family: Eczar, IM Fell English, Georgia, serif;
+    }
+    [blank]{
+      color:#ccc;
+    }
+  </style>
+</head><body>
+
+<b>en construcció</b><hr>
+<h1>Paret verda PLC</h1>
+
+<div id=app>
+  <div v-if="!valors_plc && !rebut">
+    <a href="https://undarius.icra.local:50001/server.cert" target=_blank>certificat undarius</a>
+  </div>
+
+  <p v-if="rebut">
+    Última lectura: {{rebut}}
+  </p>
+
+  <table v-if="valors_plc" border=1>
+    <tr>
+      <th>Adreça</th>
+      <th>Nom aparell</th>
+      <th>Unitat</th>
+      <th>Valor</th>
+    </tr>
+    <tbody v-for="val,i in valors_plc">
+      <tr v-if="aparells[i]">
+        <td>{{i}}</td>
+        <td>{{aparells[i].nom}}</td>
+        <td>{{aparells[i].unitat}}</td>
+        <td>{{val}}</td>
+      </tr>
+      <tr v-if="!aparells[i]">
+        <td>{{i}}</td>
+        <td blank>nom aparell</td>
+        <td blank>unitat</td>
+        <td>{{val}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  let app = Vue.createApp({
+    data(){return{
+      valors_plc:null, //array numeros
+      rebut:null,      //objecte Date
+
+      aparells:[
+        {nom:"cabal1",      unitat:"L/h", adreça:0},
+        {nom:"cabal2",      unitat:"L/h", adreça:1},
+        {nom:"cabal3",      unitat:"L/h", adreça:2},
+        {nom:"cabal4",      unitat:"L/h", adreça:3},
+        {nom:"cabal5",      unitat:"L/h", adreça:4},
+        {nom:"cabal6",      unitat:"L/h", adreça:5},
+        {nom:"cabal7",      unitat:"L/h", adreça:6},
+        {nom:"cabal8",      unitat:"L/h", adreça:7},
+        {nom:"cabalgen",    unitat:"L/h", adreça:8},
+        {nom:"pressio",     unitat:"bar", adreça:9},
+        {nom:"temperatura", unitat:"ºC",  adreça:10},
+        {nom:"humitat",     unitat:"%",   adreça:11},
+        {nom:"vent",        unitat:"m/s", adreça:12},
+        {nom:"nivell1",     unitat:"%",   adreça:13},
+        {nom:"nivell2",     unitat:"%",   adreça:14},
+        {nom:"llum",        unitat:"lux", adreça:15},
+      ],
+    }},
+
+    methods:{
+    },
+
+    computed:{
+    },
+  }).mount("#app");
+</script>
+
+<script>
+  //consulta client -> cluster -> sql server (icranet)
+  async function fetch_valors_plc(){
+    try{
+      console.log("consulta: client -> undarius -> plc...");
+      let url="https://undarius.icra.local:50001/plc";
+
+      let options={headers:{"Accept":"application/json"}};
+      let response = await fetch(url,options);
+      if(!response.ok) throw("error fetching plc");
+
+      let data = await response.json();
+      console.log(data);
+      app.rebut      = new Date();
+      app.valors_plc = data;
+    }catch(err){
+      console.error('Error fetching plc:', err);
+    }
+  }
+  fetch_valors_plc();
+</script>
