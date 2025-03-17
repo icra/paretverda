@@ -12,6 +12,10 @@
     [blank]{
       color:#ccc;
     }
+    td[number]{
+      font-family:monospace;
+      text-align:right;
+    }
   </style>
 </head><body>
 
@@ -29,10 +33,9 @@
     Fent petició a PLC...
   </p>
 
-
-  <p v-if="rebut">
-    PLC llegit: {{rebut}}
-  </p>
+  <code v-if="rebut">
+    PLC llegit: {{rebut.toISOString().substring(0,19).replace("T"," ")}}
+  </code>
 
   <table v-if="valors_plc" border=1>
     <tr>
