@@ -19,18 +19,25 @@
 <h1>Paret verda PLC</h1>
 
 <div id=app>
-  <div v-if="!valors_plc && !rebut">
+  <div v-if="error">
     <a href="https://undarius.icra.local:50001/server.cert" target=_blank>certificat undarius</a>
   </div>
 
+  <p v-if="error">{{error}}</p>
+
+  <p v-if="!error && !rebut">
+    Fent petició a PLC...
+  </p>
+
+
   <p v-if="rebut">
-    Última lectura: {{rebut}}
+    PLC llegit: {{rebut}}
   </p>
 
   <table v-if="valors_plc" border=1>
     <tr>
       <th>Adreça</th>
-      <th>Nom aparell</th>
+      <th>Senyal</th>
       <th>Unitat</th>
       <th>Valor</th>
     </tr>
@@ -56,6 +63,7 @@
     data(){return{
       valors_plc:null, //array numeros
       rebut:null,      //objecte Date
+      error:null,      //si hi ha hagut error
 
       aparells:[
         {nom:"cabal1",      unitat:"L/h", adreça:0},
@@ -101,8 +109,10 @@
       console.log(data);
       app.rebut      = new Date();
       app.valors_plc = data;
+      app.error      = null;
     }catch(err){
       console.error('Error fetching plc:', err);
+      app.error = err;
     }
   }
   fetch_valors_plc();
