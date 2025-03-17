@@ -2,7 +2,7 @@
 <!doctype html><html><head>
   <meta charset=utf8>
   <title>ICRA Paret Verda</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="lib/vue.global.prod.js"></script>
   <style>
     table{
       border-collapse:collapse;
