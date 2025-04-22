@@ -66,16 +66,16 @@
           <td>{{aparells[i].nom}}</td>
           <td>{{aparells[i].unitat}}</td>
           <td right>{{val}}</td>
-          <td v-if="i==18" v-for="b in [16,12,8,4]">
+          <td v-if="i==18" style="border:none">
             <table border=1 style="border-collapse:collapse">
               <tr xsmall>
-                <td v-for="pos in [0,1,2,3]" center>
-                  {{b-pos}}
+                <td v-for="pos in 16" center style="color:#666">
+                  {{16-pos+1}}
                 </td>
               </tr>
               <tr>
-                <td v-for="pos in [1,2,3,4]" center>
-                  {{bit(val,b-pos)}}
+                <td v-for="pos in 16" center>
+                  {{bit(val,16-pos)}}
                 </td>
               </tr>
             </table>
@@ -162,7 +162,7 @@
 
         //array de bits
         let bits=[
-          null,
+          null,             //"bit 0" comencem a comptar per l'1
           this.bit(err,0),  //bit 1
           this.bit(err,1),  //bit 2
           this.bit(err,2),  //bit 3
@@ -183,7 +183,7 @@
 
         let errors=[
           {bit:9,  text:"Nivell min D1",  present:0},
-          {bit:10,  text:"Nivell min D2",  present:0},
+          {bit:10, text:"Nivell min D2",  present:0},
           {bit:11, text:"Nivell max D1",  present:0},
           {bit:12, text:"Nivell max D2",  present:0},
           {bit:13, text:"Mínima pressió", present:0},
