@@ -18,6 +18,17 @@
     [center]{
       text-align:center;
     }
+    [xsmall]{
+      font-size:x-small;
+    }
+    [present="1"]{
+      background:gold;
+      color:black;
+    }
+    [present="0"]{
+      background:white;
+      color:#aaa;
+    }
   </style>
 </head><body>
 
@@ -57,29 +68,19 @@
           <td>{{aparells[i].nom}}</td>
           <td>{{aparells[i].unitat}}</td>
           <td right>{{val}}</td>
-          <td v-if="i==18">
-               {{bit(val,15)}}<!--
-            -->{{bit(val,14)}}<!--
-            -->{{bit(val,13)}}<!--
-            -->{{bit(val,12)}}
-          </td>
-          <td v-if="i==18">
-               {{bit(val,11)}}<!--
-            -->{{bit(val,10)}}<!--
-            -->{{bit(val,9)}}<!--
-            -->{{bit(val,8)}}
-          </td>
-          <td v-if="i==18">
-               {{bit(val,7)}}<!--
-            -->{{bit(val,6)}}<!--
-            -->{{bit(val,5)}}<!--
-            -->{{bit(val,4)}}
-          </td>
-          <td v-if="i==18">
-               {{bit(val,3)}}<!--
-            -->{{bit(val,2)}}<!--
-            -->{{bit(val,1)}}<!--
-            -->{{bit(val,0)}}
+          <td v-if="i==18" v-for="b in [16,12,8,4]">
+            <table border=1 style="border-collapse:collapse">
+              <tr xsmall>
+                <td v-for="pos in [0,1,2,3]" center>
+                  {{b-pos}}
+                </td>
+              </tr>
+              <tr>
+                <td v-for="pos in [1,2,3,4]" center>
+                  {{bit(val,b-pos)}}
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
         <tr v-if="!aparells[i]">
@@ -94,9 +95,13 @@
     <!--errors-->
     <div style="margin-left:1px">
       <table v-if="mascara_errors" border=1>
-        <tr><th>Defectes</th></tr>
-        <tr v-for="err in mascara_errors">
-          <td>{{err}}</td>
+        <tr>
+          <th colspan=3>Defectes (valor PLC adreça 18)</th></tr>
+        </tr>
+        <tr v-for="err in mascara_errors" :present="err.present">
+          <td center>bit {{err.bit}}</td>
+          <td>{{err.text}}</td>
+          <td center>{{err.present}}</td>
         </tr>
       </table>
     </div>
@@ -136,8 +141,15 @@
     }},
 
     methods:{
-      //check bit a posició "pos"
+      //check si bit posició "pos" val 1 o 0
       bit(num,pos){
+        // pos  valor màscara
+        // 0    1     = 00001
+        // 1    2     = 00010
+        // 2    4     = 00100
+        // 3    8     = 01000
+        // 4    16    = 10000
+        // etc
         let m = num & Math.pow(2,pos);
         return m ? 1:0;
       },
@@ -148,35 +160,41 @@
         if(!this.valors_plc) return false;
 
         //err: byte (number 0-255)
-        let err = this.valors_plc[18];
+        let err = this.valors_plc[18]; //number
 
         //array de bits
         let bits=[
           null,
-          this.bit(err,0),
-          this.bit(err,1),
-          this.bit(err,2),
-          this.bit(err,3),
-          this.bit(err,4),
-          this.bit(err,5),
-          this.bit(err,6),
-          this.bit(err,7),
-          this.bit(err,8),
-          this.bit(err,9),
-          this.bit(err,10),
-          this.bit(err,11),
-          this.bit(err,12),
-          this.bit(err,13),
-          this.bit(err,14),
-          this.bit(err,15),
+          this.bit(err,0),  //bit 1
+          this.bit(err,1),  //bit 2
+          this.bit(err,2),  //bit 3
+          this.bit(err,3),  //bit 4
+          this.bit(err,4),  //bit 5
+          this.bit(err,5),  //bit 6
+          this.bit(err,6),  //bit 7
+          this.bit(err,7),  //bit 8
+          this.bit(err,8),  //bit 9
+          this.bit(err,9),  //bit 10
+          this.bit(err,10), //bit 11
+          this.bit(err,11), //bit 12
+          this.bit(err,12), //bit 13
+          this.bit(err,13), //bit 14
+          this.bit(err,14), //bit 15
+          this.bit(err,15), //bit 16
         ];
 
-        let errors=[]; //array de strings
-        if(bits[8])  errors.push("nivell min D1");
-        if(bits[9])  errors.push("nivell min D2");
-        if(bits[10]) errors.push("nivell max D1");
-        if(bits[11]) errors.push("nivell max D2");
-        if(bits[12]) errors.push("minima pressió");
+        let errors=[
+          {bit:9,  text:"Nivell min D1",  present:0},
+          {bit:10,  text:"Nivell min D2",  present:0},
+          {bit:11, text:"Nivell max D1",  present:0},
+          {bit:12, text:"Nivell max D2",  present:0},
+          {bit:13, text:"Mínima pressió", present:0},
+        ];
+
+        errors.forEach(e=>{
+          if(bits[e.bit]) e.present=1;
+        });
+
         return errors;
       },
     },
