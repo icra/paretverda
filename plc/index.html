@@ -31,6 +31,12 @@
     }
   </style>
 </head><body>
+
+<nav>
+  <b href="index.html">PLC</b> |
+  <a href="historic.html">Històric</a>
+</nav>
+
 <h1>Paret verda PLC</h1>
 
 <div id=app>
@@ -48,11 +54,7 @@
     PLC llegit: {{rebut.toISOString().substring(0,19).replace("T"," ")}}
   </code>
 
-  <div
-    style="
-      display:flex;
-    "
-  >
+  <div style="display:flex;">
     <table v-if="valors_plc" border=1>
       <tr>
         <th>Adreça</th>
@@ -221,22 +223,4 @@
     }
   }
   fetch_valors_plc();
-
-  //consulta client -> cluster -> sql server (icranet)
-  async function fetch_historic_db(){
-    try{
-      console.log("consulta: client -> undarius -> db...");
-
-      let url="https://undarius.icra.local:50001/db";
-      let options={headers:{"Accept":"application/json"}};
-      let response = await fetch(url,options);
-      if(!response.ok) throw("error fetching db");
-
-      let data = await response.json();
-      console.log(data);
-    }catch(err){
-      console.error('Error fetching db:', err);
-    }
-  }
-  fetch_historic_db();
 </script>

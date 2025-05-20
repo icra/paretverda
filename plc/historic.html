@@ -1,0 +1,103 @@
+<!doctype html><html><head>
+  <title>ICRA paret verda</title>
+  <meta charset="utf8">
+
+  <!--lib vue-->
+  <script src="../lib/vue.global.prod.js"></script>
+
+  <style>
+    body{
+      font-family: Eczar, IM Fell English, Georgia, serif;
+    }
+    [blank]{
+      color:#ccc;
+    }
+    [right]{
+      text-align:right;
+    }
+    [center]{
+      text-align:center;
+    }
+    [xsmall]{
+      font-size:x-small;
+    }
+    [present="1"]{
+      background:gold;
+      color:black;
+    }
+    [present="0"]{
+      background:white;
+      color:#aaa;
+    }
+  </style>
+</head><body>
+
+<nav>
+  <a href="index.html">PLC</a> |
+  <b href="historic.html">Històric</b>
+</nav>
+
+<h1>Paret verda PLC</h1>
+
+<div id=app>
+  <div v-if="error">
+    <a href="https://undarius.icra.local:50001/server.cert" target=_blank>certificat undarius</a>
+  </div>
+  <p v-if="error">{{error}}</p>
+
+  <p v-if="!error && !historic">Carregant històric...</p>
+
+  <div v-if="historic">
+    <table border=1 xsmall>
+      <thead>
+        <tr>
+          <th rowspan=2>Data (UTC)</th>
+          <th colspan=21>Adreça</th>
+        </tr>
+        <tr>
+          <th v-for="addr in 21">{{addr-1}}</th>
+        </tr>
+      </thead>
+      <tr v-for="lec in historic">
+        <td>{{lec.data}}</td>
+        <td v-for="val in lec.lectura">{{val}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  let app = Vue.createApp({
+    data(){return{
+      error:null,
+      historic:null,
+    }},
+  }).mount("#app");
+</script>
+
+<script>
+  //consulta client -> cluster -> sql server (icranet)
+  async function fetch_historic_db(){
+    try{
+      let url="https://undarius.icra.local:50001/db";
+      console.log("consultant",url,"...");
+
+      let options={headers:{"Accept":"application/json"}};
+      let response = await fetch(url,options);
+      if(!response.ok) throw("error fetching db");
+
+      let data = await response.json();
+
+
+      data.forEach(row=>{
+        row.lectura = row.lectura.split(",");
+      });
+      data.reverse();
+      app.historic = data;
+    }catch(err){
+      console.error('Error fetching db:', err);
+      app.error = err;
+    }
+  }
+  fetch_historic_db();
+</script>
