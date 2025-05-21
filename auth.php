@@ -28,8 +28,6 @@
     header('WWW-Authenticate: Basic realm="paretverda.icradev.cat"');
     header('HTTP/1.0 401 Unauthorized');
     die("error: usuari i/o password incorrectes");
-
-
   }
   //si arriba aquí és usuari vàlid, pots carregar la pàgina
 

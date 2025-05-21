@@ -34,23 +34,44 @@
     input[type=number]{
       text-align:right;
     }
+    summary{
+      font-weight:bold;
+      cursor:pointer;
+    }
+    summary:hover{
+      text-decoration:underline;
+    }
   </style>
 </head><body>
-<h1>icra: manteniment paret verda (en desenvolupament)</h1>
+<h1>icra: manteniment paret verda (en desenvolupament)</h1><hr>
 
 <div id=app>
   <div>
-    <button @click="nou()">nou</button> |
-    <button @click="guardar()" :disabled="sistema==null">guardar</button> |
-    <button @click="carregar()">carregar</button>
-    <!--
-      |
-      <a href="db/api.php" target="_blank">veure guardat (format json)</a>
-    -->
+    <button @click="nou()" :disabled="metadata_sistemes==null">nou</button> |
+    <button @click="guardar()" :disabled="sistema==null">guardar</button>
   </div><hr>
 
-  <div v-if="sistema">
+  <details v-if="metadata_sistemes" open>
+    <summary>
+      Sistemes guardats ({{metadata_sistemes.length}})
+    </summary>
+    <table border=1>
+      <tr v-for="sis in metadata_sistemes">
+        <td>
+          <button @click="carregar(sis.id)">CARREGAR</button> |
+          <b>{{sis.nom}}</b> |
+          <small>{{sis.lloc}}</small> |
+          (id:{{sis.id}})
+          <p>{{sis.descripcio}}</p>
+          <div style="text-align:right">
+            <button @click="esborrar(sis.id)">esborrar</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </details>
 
+  <div v-if="sistema"><hr>
     <!--selector pestanyes-->
     <div
       id=selector_pestanyes
@@ -339,7 +360,6 @@
         </table>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -391,17 +411,21 @@
 <script>//Vue
   let app = Vue.createApp({
     data(){return{
+      //tots els sistemes de la base de dades
+      metadata_sistemes:null,
+
+      //sistema carregat
       id:0,
       sistema:null,
       aparell:null,
       tasca:null,
 
+      //gui
       pestanyes:[
         "inici",
         "resum_tasques_periodiques",
       ],
       pestanya_actual:"inici",
-
     }},
 
     methods:{
@@ -448,14 +472,18 @@
       //file managing
       nou(){
         this.sistema = new Sistema();
-        this.aparell=null;
-        this.tasca=null;
+        this.aparell = null;
+        this.tasca = null;
+
+        //nova id
+        let id = Math.max(0,...this.metadata_sistemes.map(sis=>sis.id))+1;
+        this.id = id;
       },
 
-      carregar(){
-        fetch("db/api.php").then(r=>r.json()).then(r=>{
+      //carrega un sistema concret
+      carregar(id){
+        fetch(`db/get_sistema.php?id=${id}`).then(r=>r.json()).then(r=>{
           r = r[0];
-
           this.id=r.id;
           this.sistema=JSON.parse(r.json);
           this.aparell=null;
@@ -463,17 +491,16 @@
 
           if(this.sistema.aparells && this.sistema.aparells.length){
             this.aparell = this.sistema.aparells[0];
-
             if(this.aparell.tasques && this.aparell.tasques.length){
               this.tasca=this.aparell.tasques[0];
             }
           }
-
         });
       },
 
+      //guardar sistema actual (o crear un de nou)
       guardar(){
-        if(!confirm("sobreescriure el sistema guardat?")){
+        if(!confirm("guardar el sistema actual?")){
           return;
         }
 
@@ -494,6 +521,29 @@
           if(success!="OK"){
             throw(success);
           }
+          fetch_metadata_sistemes();
+        }).catch(err=>{
+          alert(err);
+        });
+      },
+
+      //esborrar un sistema
+      esborrar(id){
+        if(!confirm(`Esborrar el sistema (id:${id}) (NO ES POT DESFER!)?`)){
+          return;
+        }
+
+        fetch(
+          `db/esborrar.php?id=${id}`,
+        ).then(r=>
+          r.text()
+        ).then(success=>{
+          console.log(success);
+          alert(success); //"OK"
+          if(success!="OK"){
+            throw(success);
+          }
+          fetch_metadata_sistemes();
         }).catch(err=>{
           alert(err);
         });
@@ -521,7 +571,15 @@
     },
 
     mounted(){
-      this.carregar();
+      //this.carregar(0);
+      fetch_metadata_sistemes();
     },
   }).mount("#app");
+
+  //carrega un sistema concret
+  function fetch_metadata_sistemes(){
+    fetch(`db/metadata_sistemes.php`).then(r=>r.json()).then(arr=>{
+      app.metadata_sistemes = arr;
+    });
+  }
 </script>

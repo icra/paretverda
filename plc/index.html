@@ -37,7 +37,7 @@
   <a href="historic.html">Històric</a>
 </nav>
 
-<h1>Paret verda PLC</h1>
+<h1>ICRA Paret verda PLC</h1>
 
 <div id=app>
   <div v-if="error">
@@ -51,7 +51,7 @@
   </p>
 
   <code v-if="rebut">
-    PLC llegit: {{rebut.toISOString().substring(0,19).replace("T"," ")}}
+    PLC llegit: {{rebut.toISOString().substring(0,19).replace("T"," ")}} (UTC)
   </code>
 
   <div style="display:flex;">
