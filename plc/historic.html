@@ -44,8 +44,13 @@
     <a href="https://undarius.icra.local:50001/server.cert" target=_blank>certificat undarius</a>
   </div>
   <p v-if="error">{{error}}</p>
-
   <p v-if="!error && !historic">Carregant històric...</p>
+
+  <button
+    :disabled="!historic"
+    @click="download_csv()"
+  >Descarregar CSV
+  </button>
 
   <div v-if="historic">
     <table border=1 xsmall>
@@ -72,6 +77,11 @@
       error:null,
       historic:null,
     }},
+    methods:{
+      download_csv(){
+        download_csv();
+      },
+    },
   }).mount("#app");
 </script>
 
@@ -100,4 +110,58 @@
     }
   }
   fetch_historic_db();
+</script>
+
+<script>
+  function download_csv(){
+    if(!app.historic) return;
+
+    let csv_rows=[];
+
+    let first_row=[
+      "date",
+      "cabal1 (L)",
+      "cabal2 (L)",
+      "cabal3 (L)",
+      "cabal4 (L)",
+      "cabal5 (L)",
+      "cabal6 (L)",
+      "cabal7 (L)",
+      "cabal8 (L)",
+      "cabalgen (L/h)",
+      "pressio (bar)",
+      "temperatura (ºC)",
+      "humitat (%)",
+      "vent (m/s)",
+      "nivell1 (%)",
+      "nivell2 (%)",
+      "pluja (si/no)",
+      "llum (lux)",
+      "hz (hz)",
+      "defectes (16bits)",
+      "minuts espera (min)",
+      "segons marxa (seg)",
+    ].join(";");
+    csv_rows.push(first_row);
+
+    app.historic.forEach(row=>{
+      let new_row=[row.data];
+      for(let i=0;i<row.lectura.length;i++){
+        let val = row.lectura[i];
+        new_row.push(val);
+      }
+      csv_rows.push(new_row.join(";"));
+    });
+
+    let csv_string = csv_rows.join("\n");
+    //generate <a> link and click it
+    let blob   = new Blob([csv_string],{type:'text/plain'});
+    let a      = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.target   = '_blank';
+    a.download = "download.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 </script>
