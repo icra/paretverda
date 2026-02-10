@@ -10,6 +10,7 @@ més endavant:
   - telemetria de dades (comptadors elèctrics i d'aigua)
 
 Contacte:
-  - Eric Herran (eherran@icra.cat)
   - Lluís Bosch (lbosch@icra.cat)
+  - Esther Mendoza (emendoza@icra.cat)
+  - Eric Herran (eherran@icra.cat)
   - Max Riva (mriva@icra.cat)
