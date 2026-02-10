@@ -82,12 +82,15 @@
               </tr>
             </table>
           </td>
+          <td v-if="i==8" style="border:none">
+            &larr; cabalímetre
+          </td>
         </tr>
         <tr v-if="!aparells[i]">
-          <td>{{i}}</td>
+          <td center>{{i}}</td>
           <td blank>nom aparell</td>
           <td blank>unitat</td>
-          <td>{{val}}</td>
+          <td right>{{val}}</td>
         </tr>
       </tbody>
     </table>
