@@ -9,25 +9,19 @@
     body{
       font-family: Eczar, IM Fell English, Georgia, serif;
     }
-    [blank]{
-      color:#ccc;
+    [xsmall]{
+      font-size:x-small;
     }
-    [right]{
-      text-align:right;
+    [sticky]{
+      position:sticky;
+      top:0;
+      background:white;
     }
     [center]{
       text-align:center;
     }
-    [xsmall]{
-      font-size:x-small;
-    }
-    [present="1"]{
-      background:gold;
-      color:black;
-    }
-    [present="0"]{
-      background:white;
-      color:#aaa;
+    [cabalgen=true]{
+      background:lightyellow;
     }
   </style>
 </head><body>
@@ -54,18 +48,25 @@
 
   <div v-if="historic">
     <table border=1 xsmall>
-      <thead>
+      <thead sticky>
         <tr>
           <th rowspan=2>Data (UTC)</th>
-          <th colspan=21>Adreça</th>
+          <th colspan=22>Adreça</th>
         </tr>
         <tr>
-          <th v-for="addr in 21">{{addr-1}}</th>
+          <th v-for="addr,i in 22" :cabalgen="i==8">
+            {{addr-1}}
+            <div v-if="i==8">
+              (cabalgen)
+            </div>
+          </th>
         </tr>
       </thead>
       <tr v-for="lec in historic">
         <td>{{lec.data}}</td>
-        <td v-for="val in lec.lectura">{{val}}</td>
+        <td v-for="val,i in lec.lectura" center :cabalgen="i==8">
+          {{val}}
+        </td>
       </tr>
     </table>
   </div>
