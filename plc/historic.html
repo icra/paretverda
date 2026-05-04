@@ -56,8 +56,8 @@
         <tr>
           <th v-for="addr,i in 22" :cabalgen="i==8">
             {{addr-1}}
-            <div v-if="i==8">
-              (cabalgen)
+            <div v-if="aparells[i]" xsmall>
+              [{{aparells[i].nom}}]
             </div>
           </th>
         </tr>
@@ -77,6 +77,29 @@
     data(){return{
       error:null,
       historic:null,
+      aparells:[
+        {nom:"cabal1",       unitat:"L",      adreça:0},
+        {nom:"cabal2",       unitat:"L",      adreça:1},
+        {nom:"cabal3",       unitat:"L",      adreça:2},
+        {nom:"cabal4",       unitat:"L",      adreça:3},
+        {nom:"cabal5",       unitat:"L",      adreça:4},
+        {nom:"cabal6",       unitat:"L",      adreça:5},
+        {nom:"cabal7",       unitat:"L",      adreça:6},
+        {nom:"cabal8",       unitat:"L",      adreça:7},
+        {nom:"cabalgen",     unitat:"L/h",    adreça:8},
+        {nom:"pressio",      unitat:"bar",    adreça:9},
+        {nom:"temperatura",  unitat:"ºC",     adreça:10},
+        {nom:"humitat",      unitat:"%",      adreça:11},
+        {nom:"vent",         unitat:"m/s",    adreça:12},
+        {nom:"nivell1",      unitat:"%",      adreça:13},
+        {nom:"nivell2",      unitat:"%",      adreça:14},
+        {nom:"pluja",        unitat:"si/no",  adreça:15},
+        {nom:"llum",         unitat:"lux",    adreça:16},
+        {nom:"hz",           unitat:"hz",     adreça:17},
+        {nom:"defectes",     unitat:"16bits", adreça:18},
+        {nom:"minuts espera",unitat:"min",    adreça:19},
+        {nom:"segons marxa", unitat:"seg",    adreça:20},
+      ],
     }},
     methods:{
       download_csv(){
